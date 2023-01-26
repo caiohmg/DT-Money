@@ -43,19 +43,7 @@ export function Transactions() {
         </tbody>
       </TransactionsTable>
 
-      <TransactionsTable>
-        <tbody>
-          <tr>
-            <td width="50%">Desenvolvimento de site</td>
-            <td>
-            <PriceHighlight variant="income">
-            <td>R$: 12.000,00</td>
-            </PriceHighlight>
-            </td>
-            <td>13/04/2022</td>
-          </tr>
-        </tbody>
-      </TransactionsTable>
+     
       </TransactionsContainer>
 
     
