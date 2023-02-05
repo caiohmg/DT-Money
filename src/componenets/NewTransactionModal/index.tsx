@@ -1,9 +1,18 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { ArrowCircleUp, X, ArrowCircleDown } from 'phosphor-react';
-import { CloseButton, Content, Overlay, TransactionType, TransactioTypeButton, } from "./styles";
+import * as Dialog from '@radix-ui/react-dialog'
+import { ArrowCircleUp, X, ArrowCircleDown } from 'phosphor-react'
+import {
+  CloseButton,
+  Content,
+  Overlay,
+  TransactionType,
+  TransactioTypeButton,
+} from './styles'
 import * as z from 'zod'
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod/dist/zod.js';
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod/dist/zod.js'
+
+import { useContext } from 'react'
+import { TransactionContext } from '../../contexts/TransactionsContexts'
 
 const newTrasactionFormShema = z.object({
   description: z.string(),
@@ -12,23 +21,32 @@ const newTrasactionFormShema = z.object({
   type: z.enum(['income', 'outcome']),
 })
 
-type newTransactionFormInputs = z.infer<typeof newTrasactionFormShema>;
+type newTransactionFormInputs = z.infer<typeof newTrasactionFormShema>
 
 export function NewTransactionModal() {
+  const { createTransaction } = useContext(TransactionContext)
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+  } = useForm<newTransactionFormInputs>({
+    resolver: zodResolver(newTrasactionFormShema),
+  })
 
-    const {
-      control,
-      register,
-      handleSubmit,
-      formState: { isSubmitting},
-    } = useForm<newTransactionFormInputs>({
-      resolver: zodResolver(newTrasactionFormShema),
+  async function handleCreateNewTransaction(data: newTransactionFormInputs) {
+    const { description, price, category, type } = data
+
+    await createTransaction({
+      description,
+      price,
+      category,
+      type,
     })
-    
-   async function handleCreateNewTransaction(data: newTransactionFormInputs){
-    await new Promise(resolver => setTimeout(resolver, 2000));  
-    console.log(data);
-    }
+
+    reset()
+  }
 
   return (
     <Dialog.Portal>
@@ -38,56 +56,57 @@ export function NewTransactionModal() {
         <Dialog.Title>Nova transação</Dialog.Title>
 
         <CloseButton>
-          <X size={24}/>
+          <X size={24} />
         </CloseButton>
-      
+
         <form onSubmit={handleSubmit(handleCreateNewTransaction)}>
-          <input type="text"
-            placeholder="Descrição" 
+          <input
+            type="text"
+            placeholder="Descrição"
             required
             {...register('description')}
-            />
+          />
 
-          <input type="number"
-            placeholder="Preço" 
+          <input
+            type="number"
+            placeholder="Preço"
             required
-            {...register('price', {valueAsNumber: true})}
-            />
-          <input type="text"
+            {...register('price', { valueAsNumber: true })}
+          />
+          <input
+            type="text"
             placeholder="Categoria"
             required
-            {...register ('category')}
-            />
-            
+            {...register('category')}
+          />
+
           <Controller
-          control={control}
-          name="type"
-          render={({ field }) => {
-            
-            return (
-              <TransactionType onValueChange={field.onChange} value={field.value}>
-            <TransactioTypeButton variant="income" value="income">
-              <ArrowCircleUp size={24} />
-              Entrada
-            </TransactioTypeButton>
+            control={control}
+            name="type"
+            render={({ field }) => {
+              return (
+                <TransactionType
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <TransactioTypeButton variant="income" value="income">
+                    <ArrowCircleUp size={24} />
+                    Entrada
+                  </TransactioTypeButton>
 
-            
-            <TransactioTypeButton variant="outcome" value="outcome">
-              <ArrowCircleDown size={24} />
-              Saida
-            </TransactioTypeButton>
-
-          </TransactionType>
-            )
-          }}
+                  <TransactioTypeButton variant="outcome" value="outcome">
+                    <ArrowCircleDown size={24} />
+                    Saida
+                  </TransactioTypeButton>
+                </TransactionType>
+              )
+            }}
           />
 
           <button type="submit" disabled={isSubmitting}>
             Cadastrar
           </button>
         </form>
-
-        
       </Content>
     </Dialog.Portal>
   )
