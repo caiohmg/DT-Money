@@ -6,7 +6,7 @@
   "homepage": "https://myusername.caiohmg.io/DT-Money",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -b master -d build",
     "dev": "vite",
     "dev:server": "json-server server.json -p 3333 -w -d 500",
     "lint": "eslint src --ext .tsx,.ts",
